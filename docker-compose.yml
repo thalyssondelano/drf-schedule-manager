@@ -27,6 +27,19 @@ services:
       - DB_PASSWORD=postgres
       - DB_HOST=db
       - DB_PORT=5432
+      
+  # Front-End
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      # Esse volume anônimo impede que o Docker tente sobrescrever 
+      # a pasta node_modules de dentro do container com a do seu PC
+      - /app/node_modules
+    depends_on:
+      - web # Substitua 'web' pelo nome exato que você deu ao serviço do Django
 
 volumes:
   postgres_data:
