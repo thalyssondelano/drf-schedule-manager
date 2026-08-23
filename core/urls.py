@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="drf-schedule-manager",
+      title="Drf Schedule Manager",
       default_version='v1',
       description="drf-schedule-manager",
    ),
@@ -16,13 +16,16 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # Admin
     path('admin/', admin.site.urls),
+
+    # Api
     path('api/', include('agendamentos.urls')),
 
-    # Jwt ( Auth )
+    # Jwt
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
-    # Swagger (Documentação)
+    # Swagger
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]

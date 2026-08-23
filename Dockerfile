@@ -1,3 +1,4 @@
+# Versão leve do Python.
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -10,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Utiliza UV para maior velocidade de instalacao dos pacotes.
 RUN pip install uv
 
 COPY requirements.txt /app/
