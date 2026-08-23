@@ -2,10 +2,18 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import transaction
+from drf_yasg.utils import swagger_auto_schema
+from django.utils.decorators import method_decorator
 
 from .models import Especialista, DiaSemana, Agenda, Horario
 from .serializers import EspecialistaSerializer, DiaSemanaSerializer, AgendaSerializer, HorarioSerializer
 
+@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="Lista todos os especialistas."))
+@method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Cadastra um especialista (Apenas Admin)."))
+@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Busca um especialista pelo ID."))
+@method_decorator(name='update', decorator=swagger_auto_schema(operation_description="Atualiza um especialista (Apenas Admin)."))
+@method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_description="Atualiza parcialmente um especialista (Apenas Admin)."))
+@method_decorator(name='destroy', decorator=swagger_auto_schema(operation_description="Exclui um especialista (Apenas Admin)."))
 class EspecialistaViewSet(viewsets.ModelViewSet):
     queryset = Especialista.objects.all()
     serializer_class = EspecialistaSerializer
@@ -16,11 +24,19 @@ class EspecialistaViewSet(viewsets.ModelViewSet):
             return [permissions.IsAdminUser()]
         return [permissions.IsAuthenticated()]
 
+@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="Lista os dias da semana disponíveis no sistema."))
+@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Busca um dia da semana pelo ID."))
 class DiaSemanaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = DiaSemana.objects.all()
     serializer_class = DiaSemanaSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="Lista todas as agendas."))
+@method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Cria uma agenda (Apenas Admin). Os horários são gerados automaticamente."))
+@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Busca uma agenda pelo ID."))
+@method_decorator(name='update', decorator=swagger_auto_schema(operation_description="Atualiza uma agenda (Apenas Admin)."))
+@method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_description="Atualiza parcialmente uma agenda (Apenas Admin)."))
+@method_decorator(name='destroy', decorator=swagger_auto_schema(operation_description="Exclui uma agenda (Apenas Admin)."))
 class AgendaViewSet(viewsets.ModelViewSet):
     queryset = Agenda.objects.all()
     serializer_class = AgendaSerializer
@@ -31,14 +47,11 @@ class AgendaViewSet(viewsets.ModelViewSet):
             return [permissions.IsAdminUser()]
         return [permissions.IsAuthenticated()]
 
+@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="Lista os horários disponíveis e reservados."))
+@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Busca os detalhes de um horário específico."))
 class HorarioViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Paciente só tem permissão de leitura (ReadOnly).
-    Só tem permissão de escrita na rota customizada "reservar".
-    """
-    queryset = Horario.objects.all()
+    queryset = Horario.objects.all().order_by('data', 'hora')
     serializer_class = HorarioSerializer
-
     permission_classes = [permissions.IsAuthenticated]
 
     # Sobrescreve o get_queryset para permitir os filtros na URL do frontend
@@ -55,7 +68,8 @@ class HorarioViewSet(viewsets.ReadOnlyModelViewSet):
             
         return queryset
 
-    # Cria a rota customizada de reserva
+    # Rota customizada de reserva
+    @swagger_auto_schema(operation_description="Reserva um horário disponível para o paciente logado. Previne dupla reserva.")
     @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAuthenticated])
     def reservar(self, request, pk=None):
         # transaction.atomic() garante que o banco só vai salvar se nada der errado no meio do caminho
@@ -75,7 +89,6 @@ class HorarioViewSet(viewsets.ReadOnlyModelViewSet):
 
             # Efetiva a reserva
             horario.status = 'reservado'
-            # Request.user sempre sera o usuário logado
             horario.paciente = request.user
             horario.save()
 
