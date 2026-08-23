@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import transaction
@@ -10,13 +10,26 @@ class EspecialistaViewSet(viewsets.ModelViewSet):
     queryset = Especialista.objects.all()
     serializer_class = EspecialistaSerializer
 
+    def get_permissions(self):
+        # Apenas Admins podem criar, editar ou deletar. 
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
+
 class DiaSemanaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = DiaSemana.objects.all()
     serializer_class = DiaSemanaSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class AgendaViewSet(viewsets.ModelViewSet):
     queryset = Agenda.objects.all()
     serializer_class = AgendaSerializer
+
+    def get_permissions(self):
+        # Apenas Admins podem mexer na estrutura das agendas
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
 
 class HorarioViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -25,6 +38,8 @@ class HorarioViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Horario.objects.all()
     serializer_class = HorarioSerializer
+
+    permission_classes = [permissions.IsAuthenticated]
 
     # Sobrescreve o get_queryset para permitir os filtros na URL do frontend
     def get_queryset(self):
@@ -41,12 +56,12 @@ class HorarioViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset
 
     # Cria a rota customizada de reserva
-    @action(detail=True, methods=['patch'])
+    @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAuthenticated])
     def reservar(self, request, pk=None):
         # transaction.atomic() garante que o banco só vai salvar se nada der errado no meio do caminho
         with transaction.atomic():
             try:
-                # Se duas pessoas clicarem no mesmo milissegundo, o banco manda a segunda pessoa esperar na fila.
+                # Se duas pessoas clicarem no mesmo milissegundo, o banco manda a segunda pessoa esperar na fila
                 horario = Horario.objects.select_for_update().get(pk=pk)
             except Horario.DoesNotExist:
                 return Response({"erro": "Horário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
@@ -60,8 +75,8 @@ class HorarioViewSet(viewsets.ReadOnlyModelViewSet):
 
             # Efetiva a reserva
             horario.status = 'reservado'
-            # Se o paciente estiver logado com JWT, vincula ele. Senão, fica None por enquanto.
-            horario.paciente = request.user if request.user.is_authenticated else None
+            # Request.user sempre sera o usuário logado
+            horario.paciente = request.user
             horario.save()
 
         # Devolve o objeto atualizado
