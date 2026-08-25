@@ -59,12 +59,17 @@ class HorarioViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = super().get_queryset()
         especialista_id = self.request.query_params.get('especialista_id')
         status_param = self.request.query_params.get('status')
+
+        meus = self.request.query_params.get('meus')
         
         if especialista_id:
             queryset = queryset.filter(agenda__especialista_id=especialista_id)
         
         if status_param:
             queryset = queryset.filter(status=status_param)
+
+        if meus == 'true':
+            queryset = queryset.filter(paciente=self.request.user)
             
         return queryset
 
