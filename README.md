@@ -14,6 +14,7 @@ Os pacientes interagem com uma interface, onde podem visualizar a disponibilidad
 - [Como Executar o Projeto](#execucao)
 - [Comandos Adicionais](#comandos)
 - [Credenciais e Acessos](#credenciais)
+- [Documentação](#documentacao)
 
 ---
 
@@ -132,10 +133,9 @@ Além dos passos principais do fluxo de execução, o projeto conta com comandos
 
 Utilize as informações abaixo para fazer os testes manuais após subir a aplicação na sua máquina:
 
-### 🌐 Links Rápidos
+### 🌐 Links
 - **Front-End (Vue):** [http://localhost:5173](http://localhost:5173)
 - **API Base URL:** [http://localhost:8000/api/](http://localhost:8000/api/)
-- **API Docs (Swagger):** [http://localhost:8000/swagger/](http://localhost:8000/swagger/)
 - **Admin Django:** [http://localhost:8000/admin/](http://localhost:8000/admin/)
 
 ### 👤 Login
@@ -147,6 +147,17 @@ Utilize as informações abaixo para fazer os testes manuais após subir a aplic
 **Pacientes (Podem acessar a interface e reservar consultas):**
 - **Logins:** `paciente1`, `paciente2` ou `paciente3`
 - **Senha:** `senha123`
+
+---
+
+<a id="documentacao"></a>
+## 📚 Documentação
+
+A documentação interativa de todas as rotas foi gerada via **Swagger** com descrições detalhadas dos endpoints e está disponível localmente:
+
+- **Swagger UI:** [http://localhost:8000/swagger/](http://localhost:8000/swagger/) *(Disponível logo após iniciar a aplicação)*
+
+---
 
 ## ✒️ Autor
 Desenvolvido por **Thalysson Delano**.
