@@ -38,6 +38,8 @@ class AgendaSerializer(serializers.ModelSerializer):
         data_inicio = data.get('data_inicio')
         data_fim = data.get('data_fim')
         dias_semana = data.get('dias_semana', [])
+        hora_inicio = data.get('hora_inicio') 
+        hora_fim = data.get('hora_fim')
 
         # A data final não pode ser no passado da inicial.
         if data_fim < data_inicio:
@@ -64,7 +66,9 @@ class AgendaSerializer(serializers.ModelSerializer):
         query = Agenda.objects.filter(
             especialista=especialista,
             data_inicio__lte=data_fim,
-            data_fim__gte=data_inicio
+            data_fim__gte=data_inicio,
+            hora_inicio__lt=hora_fim,
+            hora_fim__gt=hora_inicio
         )
         if self.instance:
             query = query.exclude(pk=self.instance.pk)
