@@ -9,7 +9,9 @@ schema_view = get_schema_view(
    openapi.Info(
       title="Drf Schedule Manager",
       default_version='v1',
-      description="drf-schedule-manager",
+      description="API RESTful desenvolvida com Django REST Framework para automação" \
+      " e gerenciamento de consultas clínicas, " \
+      "contendo autenticação JWT, gestão de grades de horários e controle de agendamentos.",
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),
