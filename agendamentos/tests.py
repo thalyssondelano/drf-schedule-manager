@@ -15,7 +15,7 @@ class ClinicaAPITestCase(APITestCase):
         
         # Cria dados básicos
         self.medico = Especialista.objects.create(nome="Dr. House")
-        self.segunda = DiaSemana.objects.create(dia=0)
+        self.segunda = DiaSemana.objects.get(dia=0)
         
         # URL da API de agendas
         self.url_agendas = '/api/agendas/'
@@ -139,7 +139,7 @@ class ClinicaAPITestCase(APITestCase):
         """Garante que barra agendas fantasmas (dia da semana fora do calendário)"""
         self.client.force_authenticate(user=self.admin)
         
-        domingo = DiaSemana.objects.create(dia=6)
+        domingo = DiaSemana.objects.get(dia=6)
         
         payload = {
             "especialista": self.medico.id,
