@@ -47,6 +47,12 @@ class AgendaSerializer(serializers.ModelSerializer):
                 "data_fim": "A data final não pode ser anterior à data de início."
             })
 
+        # O final do horario da consulta nao pode ser no passado do inicial.
+        if hora_fim <= hora_inicio:
+            raise serializers.ValidationError({
+                "erro": "A hora final deve ser maior que a hora de início."
+            })
+
         # Verifica se os dias marcados existem no intervalo.
         dias_totais = (data_fim - data_inicio).days + 1
         
@@ -60,7 +66,7 @@ class AgendaSerializer(serializers.ModelSerializer):
             # Faz a interseção, se for vazio, os dias sao invalidos.
             if not dias_reais.intersection(dias_selecionados):
                 raise serializers.ValidationError({
-                    "dias_semana": "Alguns dias da semana selecionados não existem neste intervalo de datas. Verifique o calendário corretamente."
+                    "dias_semana": "Os dias da semana selecionados não existem neste intervalo de datas. Verifique o calendário corretamente."
                 })
 
         query = Agenda.objects.filter(
