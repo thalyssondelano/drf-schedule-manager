@@ -73,7 +73,19 @@ const criarAgenda = async () => {
     formAgenda.value = { especialista: '', dias_semana: [], data_inicio: '', data_fim: '', hora_inicio: '', hora_fim: '', vagas_por_dia: 1 }
   } catch (error) {
     console.error(error)
-    alert('Erro ao criar agenda. Verifique os dados.')
+    
+    if (error.response && error.response.data) {
+      const dadosErro = error.response.data
+      
+      const mensagensErro = Object.values(dadosErro)
+        .flat()
+        .join('\n\n')   
+        
+      alert(`⚠️ Não foi possível criar a agenda:\n\n${mensagensErro}`)
+      
+    } else {
+      alert('⚠️ Erro de conexão.')
+    }
   }
 }
 

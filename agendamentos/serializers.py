@@ -31,31 +31,34 @@ class AgendaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate(self, data):
+        """ 
+        Impede que o mesmo especialista tenha agendas com datas sobrepostas ou invalidas.
+        """
         especialista = data.get('especialista')
         data_inicio = data.get('data_inicio')
         data_fim = data.get('data_fim')
         dias_semana = data.get('dias_semana', [])
 
-        # A data final não pode ser no passado da inicial
+        # A data final não pode ser no passado da inicial.
         if data_fim < data_inicio:
             raise serializers.ValidationError({
                 "data_fim": "A data final não pode ser anterior à data de início."
             })
 
-        # Verifica se os dias marcados existem no intervalo
+        # Verifica se os dias marcados existem no intervalo.
         dias_totais = (data_fim - data_inicio).days + 1
         
         if dias_totais < 7:
-            # Pega os números dos dias que realmente existem nesse intervalo
+            # Pega os números dos dias que realmente existem nesse intervalo.
             dias_reais = set((data_inicio + timedelta(days=i)).weekday() for i in range(dias_totais))
             
-            # Pega os números dos dias que o Admin marcou no frontend
+            # Pega os números dos dias que o Admin marcou no frontend.
             dias_selecionados = set(ds.dia for ds in dias_semana)
             
-            # Faz a interseção, se for vazio, os dias sao inválidos
+            # Faz a interseção, se for vazio, os dias sao invalidos.
             if not dias_reais.intersection(dias_selecionados):
                 raise serializers.ValidationError({
-                    "dias_semana": "Os dias da semana selecionados não ocorrem neste intervalo de datas. Verifique o calendário."
+                    "dias_semana": "Alguns dias da semana selecionados não existem neste intervalo de datas. Verifique o calendário corretamente."
                 })
 
         query = Agenda.objects.filter(
