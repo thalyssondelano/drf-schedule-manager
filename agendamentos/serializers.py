@@ -8,7 +8,7 @@ class EspecialistaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DiaSemanaSerializer(serializers.ModelSerializer):
-    # Representação em texto para ficar legível no JSON da API
+    # Representação em texto para ficar legível no JSON
     nome_dia = serializers.CharField(source='get_dia_display', read_only=True)
     
     class Meta:

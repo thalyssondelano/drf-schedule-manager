@@ -17,19 +17,14 @@ const handleLogin = async () => {
       password: password.value
     })
 
-    // Back-End devolve 'access' e 'refresh' tokens
     localStorage.setItem('access_token', response.data.access)
     localStorage.setItem('refresh_token', response.data.refresh)
     localStorage.setItem('username', username.value)
     
     router.push('/dashboard')
     
-  } catch (error) {
-    console.error("Erro completo:", error)
-    console.error("Resposta do Django:", error.response?.data)
-    console.error("Status HTTP:", error.response?.status)
-    
-    errorMessage.value = "Credenciais inválidas. Tente novamente."
+  } catch (error) {    
+    errorMessage.value = "Credenciais Incorretas. Tente novamente."
   }
 }
 </script>
@@ -37,7 +32,7 @@ const handleLogin = async () => {
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h2 class="login-title">Acesso ao Sistema</h2>
+      <h2 class="login-title">Login</h2>
       <p class="login-subtitle">Gerenciador de Agendamentos</p>
       
       <form @submit.prevent="handleLogin" class="login-form">
