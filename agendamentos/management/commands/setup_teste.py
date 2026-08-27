@@ -50,7 +50,7 @@ class Command(BaseCommand):
         {v('🌐 LINKS RÁPIDOS')}
         {v('   - Front-End (Vue) :')} {c('http://localhost:5173')}
         {v('   - API Base URL    :')} {c('http://localhost:8000/api/')}
-        {v('   - API Docs (Swag.):')} {c('http://localhost:8000/swagger/')}
+        {v('   - API Docs (Swagger):')} {c('http://localhost:8000/swagger/')}
         {v('   - Admin Django    :')} {c('http://localhost:8000/admin/')}
         {v('==================================================')}
         """
