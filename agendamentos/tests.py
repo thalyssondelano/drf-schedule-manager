@@ -104,3 +104,70 @@ class ClinicaAPITestCase(APITestCase):
         
         # Verifica se o sistema barrou com Erro 400 (Bad Request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_05_admin_nao_cria_agenda_com_data_fim_no_passado(self):
+        """Garante que a API bloqueia data de fim anterior à data de início"""
+        self.client.force_authenticate(user=self.admin)
+        payload = {
+            "especialista": self.medico.id,
+            "dias_semana": [self.segunda.id],
+            "data_inicio": "2026-08-30",
+            "data_fim": "2026-08-24", 
+            "hora_inicio": "08:00:00",
+            "hora_fim": "12:00:00",
+            "vagas_por_dia": 4
+        }
+        response = self.client.post(self.url_agendas, payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_06_admin_nao_cria_agenda_com_hora_invalida(self):
+        """Garante que a API bloqueia turnos de zero minutos ou invertidos"""
+        self.client.force_authenticate(user=self.admin)
+        payload = {
+            "especialista": self.medico.id,
+            "dias_semana": [self.segunda.id],
+            "data_inicio": "2026-08-24",
+            "data_fim": "2026-08-30",
+            "hora_inicio": "08:00:00",
+            "hora_fim": "08:00:00",
+            "vagas_por_dia": 4
+        }
+        response = self.client.post(self.url_agendas, payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_07_admin_nao_cria_agenda_com_dia_inexistente_no_intervalo(self):
+        """Garante que barra agendas fantasmas (dia da semana fora do calendário)"""
+        self.client.force_authenticate(user=self.admin)
+        
+        domingo = DiaSemana.objects.create(dia=6)
+        
+        payload = {
+            "especialista": self.medico.id,
+            "dias_semana": [domingo.id], 
+            "data_inicio": "2026-08-24", 
+            "data_fim": "2026-08-25",
+            "hora_inicio": "08:00:00",
+            "hora_fim": "12:00:00",
+            "vagas_por_dia": 4
+        }
+        response = self.client.post(self.url_agendas, payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_08_admin_nao_cria_agenda_sobreposta(self):
+        """Garante que a API impede choque de horários do especialista"""
+        self.client.force_authenticate(user=self.admin)
+        
+        payload = {
+            "especialista": self.medico.id,
+            "dias_semana": [self.segunda.id],
+            "data_inicio": "2026-08-24",
+            "data_fim": "2026-08-30",
+            "hora_inicio": "08:00:00",
+            "hora_fim": "12:00:00",
+            "vagas_por_dia": 4
+        }
+        self.client.post(self.url_agendas, payload)
+        
+        response2 = self.client.post(self.url_agendas, payload)
+        
+        self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
