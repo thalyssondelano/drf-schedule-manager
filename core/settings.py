@@ -119,6 +119,16 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+
+    # Rate Limiting (Anti-DoS)
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "20/minute",  
+        "user": "5000/day", 
+    },
 }
 
 SIMPLE_JWT = {
@@ -141,3 +151,14 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+
+# Limite de 2.5MB para uploads e payloads de API
+DATA_UPLOAD_MAX_MEMORY_SIZE = 2621440 
+# Mitiga ataques de Hash Collision DoS limitando a quantidade de campos no payload
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
+# Impede que o site seja embutido em iframes falsos (Clickjacking)
+X_FRAME_OPTIONS = "DENY"
+# Força o navegador a respeitar o formato do arquivo (Anti MIME Sniffing)
+SECURE_CONTENT_TYPE_NOSNIFF = True
+# Ativa o bloqueio nativo do navegador contra injeção de scripts (Anti XSS)
+SECURE_BROWSER_XSS_FILTER = True
