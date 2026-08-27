@@ -6,6 +6,18 @@ A plataforma permite o cadastro de especialistas e a definição de suas grades 
 
 Os pacientes interagem com uma interface, onde podem visualizar a disponibilidade e agendar consultas. O sistema conta com autenticação JWT e validações para garantir a integridade dos dados, impedindo sobreposição de agendas e bloqueando reservas duplicadas no mesmo horário.
 
+---
+
+## 📋 Sumário
+- [Tecnologias Utilizadas](#tecnologias)
+- [Pré-requisitos](#prerrequisitos)
+- [Como Executar o Projeto](#execucao)
+- [Comandos Adicionais](#comandos)
+- [Credenciais e Acessos](#credenciais)
+
+---
+
+<a id="tecnologias"></a>
 ## 🛠️ Tecnologias Utilizadas
 - **Backend:** Django, Django REST Framework
 - **Frontend:** Vue.js
@@ -14,6 +26,7 @@ Os pacientes interagem com uma interface, onde podem visualizar a disponibilidad
 
 ---
 
+<a id="prerrequisitos"></a>
 ## ⚙️ Pré-requisitos
 Para rodar o projeto, você precisará ter instalado em sua máquina:
 - **Docker** e **Docker Compose**
@@ -29,11 +42,12 @@ sudo apt update && sudo apt install make -y
 ```
 ---
 
+<a id="execucao"></a>
 ## 🚀 Como Executar o Projeto
 
 **1. Clone o repositório e acesse a pasta:**
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/thalyssondelano/drf-schedule-manager.git
 cd drf-schedule-manager
 ```
 
@@ -96,6 +110,7 @@ docker compose exec web python manage.py test
 
 ---
 
+<a id="comandos"></a>
 ## 💻 Comandos Adicionais
 
 Além dos passos principais do fluxo de execução, o projeto conta com comandos auxiliares no `Makefile`. Abaixo está a tabela de equivalência com os comandos nativos do Docker:
@@ -110,6 +125,9 @@ Além dos passos principais do fluxo de execução, o projeto conta com comandos
 | **Aplicar migrações do Django** | `make migrate` | `docker compose exec web python manage.py migrate` |
 | **Criar superusuário manualmente** | `make superuser` | `docker compose exec web python manage.py createsuperuser` |
 
+---
+
+<a id="credenciais"></a>
 ## 🔑 Credenciais e Acessos
 
 Utilize as informações abaixo para fazer os testes manuais após subir a aplicação na sua máquina:
