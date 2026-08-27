@@ -11,7 +11,7 @@ class Especialista(models.Model):
 
 class DiaSemana(models.Model):
     """
-    Entidade fixa para normalizar os dias da semana.
+    Entidade para normalizar os dias da semana.
     """
     DIA_CHOICES = [
         (0, 'Segunda-feira'),
