@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Especialista, DiaSemana, Agenda, Horario
+from datetime import timedelta
 from .services import gerar_horarios_para_agenda
 
 class EspecialistaSerializer(serializers.ModelSerializer):
@@ -28,6 +29,49 @@ class AgendaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agenda
         fields = '__all__'
+
+    def validate(self, data):
+        especialista = data.get('especialista')
+        data_inicio = data.get('data_inicio')
+        data_fim = data.get('data_fim')
+        dias_semana = data.get('dias_semana', [])
+
+        # A data final não pode ser no passado da inicial
+        if data_fim < data_inicio:
+            raise serializers.ValidationError({
+                "data_fim": "A data final não pode ser anterior à data de início."
+            })
+
+        # Verifica se os dias marcados existem no intervalo
+        dias_totais = (data_fim - data_inicio).days + 1
+        
+        if dias_totais < 7:
+            # Pega os números dos dias que realmente existem nesse intervalo
+            dias_reais = set((data_inicio + timedelta(days=i)).weekday() for i in range(dias_totais))
+            
+            # Pega os números dos dias que o Admin marcou no frontend
+            dias_selecionados = set(ds.dia for ds in dias_semana)
+            
+            # Faz a interseção, se for vazio, os dias sao inválidos
+            if not dias_reais.intersection(dias_selecionados):
+                raise serializers.ValidationError({
+                    "dias_semana": "Os dias da semana selecionados não ocorrem neste intervalo de datas. Verifique o calendário."
+                })
+
+        query = Agenda.objects.filter(
+            especialista=especialista,
+            data_inicio__lte=data_fim,
+            data_fim__gte=data_inicio
+        )
+        if self.instance:
+            query = query.exclude(pk=self.instance.pk)
+
+        if query.exists():
+            raise serializers.ValidationError({
+                "erro": "Este especialista já possui uma agenda que conflita com este período."
+            })
+
+        return data
 
     def create(self, validated_data):
         """
