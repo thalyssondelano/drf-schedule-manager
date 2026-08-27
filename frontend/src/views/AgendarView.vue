@@ -97,7 +97,7 @@ const voltar = () => {
               :disabled="horario.paciente !== null"
               :class="['btn-horario', horario.paciente !== null ? 'ocupado' : 'livre']"
             >
-              <span class="data-hora">{{ horario.data }} - {{ horario.hora }}</span>
+              <span class="data-hora">{{ horario.data_br }} - {{ horario.periodo }}</span>
               <span class="status-text">
                 {{ horario.paciente !== null ? 'Reservado' : 'Disponível' }}
               </span>
