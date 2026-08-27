@@ -1,0 +1,25 @@
+name: CI Pipeline - Testes Unitários
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    name: Run Django Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Subir a infraestrutura (Banco de Dados)
+        run: docker compose up -d db
+
+      - name: Construir a imagem da API e rodar migrações
+        run: docker compose up -d web
+
+      - name: Executar os testes unitários
+        run: docker compose exec -T web python manage.py test
