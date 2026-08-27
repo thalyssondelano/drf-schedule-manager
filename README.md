@@ -1,4 +1,4 @@
-# DRF Schedule Manager
+# 📅 DRF Schedule Manager
 
 **DRF Schedule Manager** é uma aplicação desenvolvida para automatizar e simplificar o gerenciamento de consultas clínicas. 
 
